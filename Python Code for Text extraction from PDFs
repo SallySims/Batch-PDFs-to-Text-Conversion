@@ -1,0 +1,44 @@
+
+### Loading the PDf files
+!pip install pypdf  # Ensure this cell is run to install pypdf
+!pip install pymupdf # Ensure this cell is run to install pymudf
+
+### Importing the packages after installation
+import pypdf
+import fitz
+
+### Creating the path for the PDfs
+Docpdf=os.path.join(path_d, 'PDFs/')
+Docpdf
+
+### Geting the PDfs files
+Getpdf=[f for f in os.listdir(Docpdf) if f.endswith('.pdf')]
+Getpdf
+
+### Reading each PDF and creating the dataframe
+Pdfdocs = []
+
+for f in Getpdf:
+    file_path = os.path.join(Docpdf, f)
+    try:
+        print(f"📄 Reading: {f}")
+        doc = fitz.open(file_path)
+        text = ""
+        for page in doc:
+            text += page.get_text()
+        doc.close()
+        Pdfdocs.append({'filename': f, 'text': text})
+    except Exception as e:
+        print(f"⚠️ Error reading {f}: {e}")
+        Pdfdocs.append({'filename': f, 'text': None})
+
+## Convert to DataFrame
+Pdfdocs_df = pd.DataFrame(Pdfdocs)
+Pdfdocs_df.head()
+
+## Creating the Colum called Abstract
+Pdfdocs_df['Abstract']=Pdfdocs_df['text']
+Pdfdocs_df
+
+## saving the drive
+Pdfdocs_df.to_csv('/content/drive/PATHTOYOURDRIVE/Obesitydata/Docs.csv', index=False) ## I am Mounting my Drive on COLAB
